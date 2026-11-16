@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { SipCalculator } from './components/SipCalculator';
 import { EmergencyFundCalculator } from './components/EmergencyFundCalculator';
 import { InsuranceAdvisor } from './components/InsuranceAdvisor';
 import { DailyHabitTracker } from './components/DailyHabitTracker';
 import { WisdomHub } from './components/WisdomHub';
+import { AdminPanel } from './components/AdminPanel';
+import { AuthModal } from './components/AuthModal';
 import { AiAssistant } from './components/AiAssistant';
-import { HeartPulse, ShieldAlert, Sparkles, TrendingUp } from 'lucide-react';
+import { HeartPulse, Sparkles, TrendingUp } from 'lucide-react';
 
-export default function App() {
+function MainLayout() {
   const [activeTab, setActiveTab] = useState<string>('sip');
   const [isAiOpen, setIsAiOpen] = useState<boolean>(false);
+  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
@@ -18,6 +23,7 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         openAiChat={() => setIsAiOpen(true)}
+        openAuthModal={() => setIsAuthOpen(true)}
       />
 
       {/* Hero Banner */}
@@ -68,28 +74,28 @@ export default function App() {
         {activeTab === 'insurance' && <InsuranceAdvisor />}
         {activeTab === 'habits' && <DailyHabitTracker />}
         {activeTab === 'wisdom' && <WisdomHub />}
+        {activeTab === 'admin' && <AdminPanel />}
       </main>
 
-      {/* Floating AI Button (Mobile) */}
-      <div className="fixed bottom-6 right-6 md:hidden">
-        <button
-          onClick={() => setIsAiOpen(true)}
-          className="h-14 w-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl flex items-center justify-center border border-emerald-400/40"
-        >
-          <Sparkles className="h-6 w-6" />
-        </button>
-      </div>
-
-      {/* Rational AI Assistant Modal */}
+      {/* Modals */}
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
       <AiAssistant isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 bg-slate-950 py-6 px-4 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto space-y-1">
           <p>Compounding Life — Inspired by Charlie Munger, Warren Buffett, Benjamin Graham, Parag Parikh &amp; InvestYadnya.</p>
-          <p className="text-slate-600 font-mono">Java 21 • Spring Boot 3.3 • React 18 • Spring AI &amp; MCP • Docker • GCP Cloud Run Ready</p>
+          <p className="text-slate-600 font-mono">Java 21 • Spring Boot 3.3 • Spring Security 6 • JWT • React 18 • Docker • GCP Cloud Run</p>
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainLayout />
+    </AuthProvider>
   );
 }

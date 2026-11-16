@@ -4,6 +4,22 @@ server:
 spring:
   application:
     name: compounding-life-backend
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:mem:compoundingdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+    driver-class-name: ${DATABASE_DRIVER:org.h2.Driver}
+    username: ${DATABASE_USER:sa}
+    password: ${DATABASE_PASS:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+jwt:
+  secret: ${JWT_SECRET:CompoundingLifeLongevityHealthAndWealthSecretKey2026SecureStringWith256Bits}
+  expirationMs: 86400000 # 24 hours
 
 gemini:
   api:

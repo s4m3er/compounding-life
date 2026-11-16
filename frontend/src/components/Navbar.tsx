@@ -1,20 +1,28 @@
 import React from 'react';
-import { HeartPulse, TrendingUp, Sparkles, BookOpen, ShieldCheck, CheckSquare } from 'lucide-react';
+import { HeartPulse, TrendingUp, Sparkles, BookOpen, ShieldCheck, CheckSquare, ShieldAlert, User, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   openAiChat: () => void;
+  openAuthModal: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openAiChat }) => {
+export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openAiChat, openAuthModal }) => {
+  const { user, logout, isAdmin } = useAuth();
+
   const navItems = [
     { id: 'sip', label: 'SIP Compounding', icon: TrendingUp },
     { id: 'emergency', label: 'Emergency Fund', icon: ShieldCheck },
-    { id: 'insurance', label: 'Insurance Shield', icon: ShieldCheck },
+    { id: 'insurance', label: 'Insurance Shield', icon: ShieldAlert },
     { id: 'habits', label: 'Boring Basics (Daily)', icon: CheckSquare },
     { id: 'wisdom', label: 'Wisdom Vault', icon: BookOpen },
   ];
+
+  if (isAdmin) {
+    navItems.push({ id: 'admin', label: 'Admin Portal', icon: ShieldCheck });
+  }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur">
@@ -29,7 +37,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openAiC
           </div>
         </div>
 
-        <nav className="hidden md:flex space-x-1">
+        <nav className="hidden lg:flex space-x-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -37,26 +45,54 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openAiC
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   isActive
                     ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
                 }`}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-3.5 w-3.5" />
                 <span>{item.label}</span>
               </button>
             );
           })}
         </nav>
 
-        <button
-          onClick={openAiChat}
-          className="flex items-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3.5 py-2 rounded-lg text-sm font-medium shadow-lg shadow-emerald-900/20 border border-emerald-400/20 transition-all"
-        >
-          <Sparkles className="h-4 w-4 animate-pulse" />
-          <span>Ask Rational AI</span>
-        </button>
+        <div className="flex items-center space-x-2.5">
+          <button
+            onClick={openAiChat}
+            className="hidden sm:flex items-center space-x-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium shadow-lg shadow-emerald-900/20 border border-emerald-400/20 transition-all"
+          >
+            <Sparkles className="h-3.5 w-3.5 animate-pulse" />
+            <span>Rational AI</span>
+          </button>
+
+          {user ? (
+            <div className="flex items-center space-x-2 bg-slate-900/90 border border-slate-800 py-1 px-2.5 rounded-lg text-xs">
+              <div className="flex items-center space-x-1.5 text-slate-200">
+                <span className="font-semibold text-emerald-400">{user.fullName}</span>
+                {user.role === 'ROLE_ADMIN' && (
+                  <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-mono">Admin</span>
+                )}
+              </div>
+              <button
+                onClick={logout}
+                title="Sign Out"
+                className="text-slate-400 hover:text-rose-400 p-1 transition-colors"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={openAuthModal}
+              className="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+            >
+              <User className="h-3.5 w-3.5" />
+              <span>Sign In / Register</span>
+            </button>
+          )}
+        </div>
       </div>
     </header>
   );
