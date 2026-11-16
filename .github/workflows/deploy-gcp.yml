@@ -8,7 +8,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  GAR_LOCATION: us-central1
+  GAR_LOCATION: asia-south1
   REPOSITORY: compounding-repo
   SERVICE_BACKEND: compounding-backend
   SERVICE_FRONTEND: compounding-frontend
@@ -32,22 +32,13 @@ jobs:
         run: |
           gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev --quiet
 
-      - name: Ensure Artifact Registry Docker Repository Exists
-        run: |
-          gcloud artifacts repositories create ${{ env.REPOSITORY }} \
-            --repository-format=docker \
-            --location=${{ env.GAR_LOCATION }} \
-            --project=${{ env.PROJECT_ID }} \
-            --description="Compounding Life Docker Images" \
-            --quiet || true
-
       # Build and push Backend Container
       - name: Build and Push Backend Container
         run: |
           docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/backend:${{ github.sha }} -f docker/Dockerfile.backend .
           docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/backend:${{ github.sha }}
 
-      # Deploy Backend to Cloud Run
+      # Deploy Backend to Cloud Run (Mumbai: asia-south1)
       - name: Deploy Backend to Cloud Run
         run: |
           gcloud run deploy ${{ env.SERVICE_BACKEND }} \
@@ -65,7 +56,7 @@ jobs:
           docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/frontend:${{ github.sha }} -f docker/Dockerfile.frontend .
           docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/frontend:${{ github.sha }}
 
-      # Deploy Frontend to Cloud Run
+      # Deploy Frontend to Cloud Run (Mumbai: asia-south1)
       - name: Deploy Frontend to Cloud Run
         run: |
           gcloud run deploy ${{ env.SERVICE_FRONTEND }} \
