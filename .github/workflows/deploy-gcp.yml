@@ -57,7 +57,7 @@ jobs:
           docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/frontend:${{ github.sha }} -f docker/Dockerfile.frontend .
           docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/frontend:${{ github.sha }}
 
-      # Deploy Frontend to Cloud Run (Mumbai: asia-south1)
+      # Deploy Frontend to Cloud Run (Mumbai: asia-south1, Port 80 for Nginx)
       - name: Deploy Frontend to Cloud Run
         run: |
           gcloud run deploy ${{ env.SERVICE_FRONTEND }} \
@@ -67,4 +67,5 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --service-account=antigravity@${{ env.PROJECT_ID }}.iam.gserviceaccount.com \
+            --port 80 \
             --quiet
