@@ -47,6 +47,7 @@ jobs:
             --project ${{ env.PROJECT_ID }} \
             --platform managed \
             --allow-unauthenticated \
+            --service-account=antigravity@${{ env.PROJECT_ID }}.iam.gserviceaccount.com \
             --set-env-vars GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
             --quiet
 
@@ -65,4 +66,5 @@ jobs:
             --project ${{ env.PROJECT_ID }} \
             --platform managed \
             --allow-unauthenticated \
+            --service-account=antigravity@${{ env.PROJECT_ID }}.iam.gserviceaccount.com \
             --quiet
