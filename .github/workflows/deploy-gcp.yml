@@ -1,0 +1,61 @@
+name: Build & Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GAR_LOCATION: us-central1
+  SERVICE_BACKEND: compounding-backend
+  SERVICE_FRONTEND: compounding-frontend
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for GCP Artifact Registry
+        run: gcloud auth configure-docker ${GAR_LOCATION}-docker.pkg.dev --quiet
+
+      # Build and push Backend
+      - name: Build and Push Backend Container
+        run: |
+          docker build -t ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/compounding-repo/backend:${{ github.sha }} -f docker/Dockerfile.backend .
+          docker push ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/compounding-repo/backend:${{ github.sha }}
+
+      # Deploy Backend to Cloud Run
+      - name: Deploy Backend to Cloud Run
+        run: |
+          gcloud run deploy ${SERVICE_BACKEND} \
+            --image ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/compounding-repo/backend:${{ github.sha }} \
+            --region ${GAR_LOCATION} \
+            --platform managed \
+            --allow-unauthenticated \
+            --set-env-vars GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+
+      # Build and push Frontend
+      - name: Build and Push Frontend Container
+        run: |
+          docker build -t ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/compounding-repo/frontend:${{ github.sha }} -f docker/Dockerfile.frontend .
+          docker push ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/compounding-repo/frontend:${{ github.sha }}
+
+      # Deploy Frontend to Cloud Run
+      - name: Deploy Frontend to Cloud Run
+        run: |
+          gcloud run deploy ${SERVICE_FRONTEND} \
+            --image ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/compounding-repo/frontend:${{ github.sha }} \
+            --region ${GAR_LOCATION} \
+            --platform managed \
+            --allow-unauthenticated

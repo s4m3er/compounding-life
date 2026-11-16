@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: compounding-life-backend
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-flash-lite-latest}
+    endpoint: https://generativelanguage.googleapis.com/v1beta/models
