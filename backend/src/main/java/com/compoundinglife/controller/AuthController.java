@@ -80,6 +80,7 @@ public class AuthController {
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .role(user.getRole())
+                .onboardingCompleted(false)
                 .build());
     }
 
@@ -105,6 +106,7 @@ public class AuthController {
                     .fullName(user.getFullName())
                     .role(user.getRole())
                     .picture(user.getPicture())
+                    .onboardingCompleted(user.getOnboardingCompleted() != null && user.getOnboardingCompleted())
                     .build());
         } catch (Exception e) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid email or password"));
@@ -171,6 +173,7 @@ public class AuthController {
                     .fullName(user.getFullName())
                     .role(user.getRole())
                     .picture(user.getPicture())
+                    .onboardingCompleted(user.getOnboardingCompleted() != null && user.getOnboardingCompleted())
                     .build());
 
         } catch (Exception e) {

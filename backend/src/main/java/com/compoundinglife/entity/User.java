@@ -35,6 +35,22 @@ public class User {
     @Column(length = 1000)
     private String picture;
 
+    // Personalized Onboarding & Financial Profile Fields
+    private Integer age;
+
+    private String gender; // "Male", "Female", "Prefer not to say"
+
+    private Double monthlyIncome;
+
+    private Double currentInvestments;
+
+    private Integer emergencyFundMonths;
+
+    private String primaryGoal;
+
+    @Builder.Default
+    private Boolean onboardingCompleted = false;
+
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 

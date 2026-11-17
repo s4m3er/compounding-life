@@ -9,6 +9,8 @@ import { WisdomHub } from './components/WisdomHub';
 import { AdminPanel } from './components/AdminPanel';
 import { AuthModal } from './components/AuthModal';
 import { AiAssistant } from './components/AiAssistant';
+import { OnboardingModal } from './components/OnboardingModal';
+import { ProfileModal } from './components/ProfileModal';
 import { HeartPulse, Sparkles, TrendingUp, Database, Globe, Shield } from 'lucide-react';
 import axios from 'axios';
 
@@ -25,8 +27,17 @@ function MainLayout() {
   const [activeTab, setActiveTab] = useState<string>('sip');
   const [isAiOpen, setIsAiOpen] = useState<boolean>(false);
   const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(false);
+  const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
   const [systemInfo, setSystemInfo] = useState<SystemInfo | null>(null);
-  const { user, isAdmin } = useAuth();
+  const { user, userProfile, isAdmin } = useAuth();
+
+  // Trigger personalized onboarding if user is logged in and hasn't completed onboarding yet
+  useEffect(() => {
+    if (user && userProfile && !userProfile.onboardingCompleted) {
+      setIsOnboardingOpen(true);
+    }
+  }, [user, userProfile]);
 
   useEffect(() => {
     // Only fetch live backend version & database telemetry if user is authenticated Admin
@@ -54,6 +65,7 @@ function MainLayout() {
         setActiveTab={setActiveTab}
         openAiChat={() => setIsAiOpen(true)}
         openAuthModal={() => setIsAuthOpen(true)}
+        openProfileModal={() => setIsProfileOpen(true)}
       />
 
       {/* Hero Banner */}
@@ -110,6 +122,8 @@ function MainLayout() {
       {/* Modals */}
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
       <AiAssistant isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />
+      <OnboardingModal isOpen={isOnboardingOpen} onClose={() => setIsOnboardingOpen(false)} />
+      <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
 
       {/* Footer */}
       <footer className="border-t border-slate-800/80 bg-slate-950 py-6 px-4 text-center text-xs text-slate-500">

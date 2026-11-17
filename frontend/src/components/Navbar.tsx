@@ -7,9 +7,10 @@ interface NavbarProps {
   setActiveTab: (tab: string) => void;
   openAiChat: () => void;
   openAuthModal: () => void;
+  openProfileModal?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openAiChat, openAuthModal }) => {
+export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openAiChat, openAuthModal, openProfileModal }) => {
   const { user, logout, isAdmin } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -80,10 +81,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openAiC
 
             {user ? (
               <div className="flex items-center space-x-2 bg-slate-900 border border-slate-800 py-1 px-2.5 rounded-lg text-xs">
-                {user.picture ? (
-                  <img src={user.picture} alt={user.fullName} className="h-4 w-4 rounded-full object-cover" />
-                ) : null}
-                <span className="font-semibold text-emerald-400 max-w-[90px] truncate">{user.fullName}</span>
+                <button
+                  onClick={openProfileModal}
+                  className="flex items-center space-x-1.5 hover:opacity-80 transition-opacity"
+                  title="View & Edit Financial Health Profile"
+                >
+                  {user.picture ? (
+                    <img src={user.picture} alt={user.fullName} className="h-4 w-4 rounded-full object-cover" />
+                  ) : null}
+                  <span className="font-semibold text-emerald-400 max-w-[90px] truncate">{user.fullName}</span>
+                </button>
                 <button
                   onClick={logout}
                   title="Sign Out"
