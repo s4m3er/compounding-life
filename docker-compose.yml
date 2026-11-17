@@ -67,7 +67,7 @@ services:
       - KAFKA_ENABLED=true
       - KAFKA_AUTO_STARTUP=true
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - GEMINI_MODEL=gemini-flash-lite-latest
+      - GEMINI_MODEL=gemini-1.5-flash
     depends_on:
       - postgres
       - kafka

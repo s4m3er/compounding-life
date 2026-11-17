@@ -154,7 +154,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ isOpen, onClose }) => 
                 className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-xl p-3.5 text-xs sm:text-sm leading-relaxed ${
+                  className={`max-w-[85%] rounded-xl p-3.5 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
                     m.role === 'user'
                       ? 'bg-emerald-600 text-white'
                       : 'bg-slate-950/80 border border-slate-800 text-slate-200'
