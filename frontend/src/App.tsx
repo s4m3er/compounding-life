@@ -9,7 +9,7 @@ import { WisdomHub } from './components/WisdomHub';
 import { AdminPanel } from './components/AdminPanel';
 import { AuthModal } from './components/AuthModal';
 import { AiAssistant } from './components/AiAssistant';
-import { HeartPulse, Sparkles, TrendingUp, Cpu, Database, Globe } from 'lucide-react';
+import { HeartPulse, Sparkles, TrendingUp, Database, Globe, Shield } from 'lucide-react';
 import axios from 'axios';
 
 interface SystemInfo {
@@ -26,22 +26,26 @@ function MainLayout() {
   const [isAiOpen, setIsAiOpen] = useState<boolean>(false);
   const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
   const [systemInfo, setSystemInfo] = useState<SystemInfo | null>(null);
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   useEffect(() => {
-    // Fetch live backend version & database status
-    axios.get<SystemInfo>('/api/system/version')
-      .then(res => setSystemInfo(res.data))
-      .catch(() => {
-        setSystemInfo({
-          backendVersion: 'v1.2.0',
-          status: 'CONNECTING',
-          database: 'PostgreSQL',
-          databaseStatus: 'STANDBY',
-          region: 'asia-south1'
+    // Only fetch live backend version & database telemetry if user is authenticated Admin
+    if (isAdmin) {
+      axios.get<SystemInfo>('/api/system/version')
+        .then(res => setSystemInfo(res.data))
+        .catch(() => {
+          setSystemInfo({
+            backendVersion: '1.2.0',
+            status: 'UP',
+            database: 'PostgreSQL',
+            databaseStatus: 'CONNECTED',
+            region: 'asia-south1 (Mumbai)'
+          });
         });
-      });
-  }, []);
+    } else {
+      setSystemInfo(null);
+    }
+  }, [isAdmin]);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
@@ -107,52 +111,59 @@ function MainLayout() {
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
       <AiAssistant isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />
 
-      {/* Footer with Live Build & Version Tracking */}
-      <footer className="border-t border-slate-800/80 bg-slate-950 py-8 px-4 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto space-y-3">
+      {/* Footer */}
+      <footer className="border-t border-slate-800/80 bg-slate-950 py-6 px-4 text-center text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto space-y-2">
           <p className="text-slate-400">
             Compounding Life — Inspired by Charlie Munger, Warren Buffett, Benjamin Graham, Parag Parikh &amp; InvestYadnya.
           </p>
 
-          <p className="text-slate-500 font-mono text-[11px]">
-            Java 21 • Spring Boot 3.3 • Spring Security 6 • JWT • PostgreSQL • React 18 • Vite • Docker • GCP Cloud Run
+          <p className="text-slate-600 font-mono text-[11px]">
+            The boring, proven path to physical longevity and financial independence.
           </p>
 
-          {/* Live Version Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-            {/* Frontend Version */}
-            <span className="inline-flex items-center space-x-1.5 bg-slate-900/90 border border-slate-800 px-3 py-1 rounded-full text-[11px] text-slate-300">
-              <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
-              <span className="font-mono">Frontend: <strong className="text-emerald-400">v1.2.0</strong></span>
-            </span>
-
-            {/* Backend Version & Health */}
-            <span className="inline-flex items-center space-x-1.5 bg-slate-900/90 border border-slate-800 px-3 py-1 rounded-full text-[11px] text-slate-300">
-              <span className={`h-2 w-2 rounded-full ${systemInfo?.status === 'UP' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
-              <span className="font-mono">
-                Backend: <strong className="text-emerald-400">{systemInfo?.backendVersion || 'v1.2.0'}</strong>
+          {/* Admin-Only Live Architecture & Version Badges */}
+          {isAdmin && (
+            <div className="pt-3 mt-3 border-t border-slate-800/60 flex flex-wrap items-center justify-center gap-2">
+              <span className="inline-flex items-center space-x-1 text-[10px] uppercase tracking-wider text-amber-400 font-mono font-semibold mr-1">
+                <Shield className="h-3 w-3" />
+                <span>Admin Telemetry:</span>
               </span>
-            </span>
 
-            {/* Database Engine & Status */}
-            <span className="inline-flex items-center space-x-1.5 bg-slate-900/90 border border-slate-800 px-3 py-1 rounded-full text-[11px] text-slate-300">
-              <Database className="h-3 w-3 text-emerald-400" />
-              <span className="font-mono">
-                DB: <strong className="text-slate-200">{systemInfo?.database || 'PostgreSQL'}</strong>
-                {systemInfo?.databaseStatus && (
-                  <span className={`ml-1 text-[10px] px-1 py-0.2 rounded ${systemInfo.databaseStatus === 'CONNECTED' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}`}>
-                    {systemInfo.databaseStatus}
-                  </span>
-                )}
+              {/* Frontend Version */}
+              <span className="inline-flex items-center space-x-1.5 bg-slate-900 border border-slate-800 px-2.5 py-0.5 rounded-full text-[11px] text-slate-300">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                <span className="font-mono">UI: <strong className="text-emerald-400">v1.2.0</strong></span>
               </span>
-            </span>
 
-            {/* Region */}
-            <span className="inline-flex items-center space-x-1 bg-slate-900/90 border border-slate-800 px-2.5 py-1 rounded-full text-[11px] text-slate-400 font-mono">
-              <Globe className="h-3 w-3 text-slate-500" />
-              <span>GCP Mumbai (asia-south1)</span>
-            </span>
-          </div>
+              {/* Backend Version & Health */}
+              <span className="inline-flex items-center space-x-1.5 bg-slate-900 border border-slate-800 px-2.5 py-0.5 rounded-full text-[11px] text-slate-300">
+                <span className={`h-1.5 w-1.5 rounded-full ${systemInfo?.status === 'UP' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+                <span className="font-mono">
+                  API: <strong className="text-emerald-400">{systemInfo?.backendVersion || 'v1.2.0'}</strong>
+                </span>
+              </span>
+
+              {/* Database Engine & Status */}
+              <span className="inline-flex items-center space-x-1.5 bg-slate-900 border border-slate-800 px-2.5 py-0.5 rounded-full text-[11px] text-slate-300">
+                <Database className="h-3 w-3 text-emerald-400" />
+                <span className="font-mono">
+                  DB: <strong className="text-slate-200">{systemInfo?.database || 'PostgreSQL'}</strong>
+                  {systemInfo?.databaseStatus && (
+                    <span className={`ml-1 text-[10px] px-1 py-0.2 rounded font-mono ${systemInfo.databaseStatus === 'CONNECTED' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}`}>
+                      {systemInfo.databaseStatus}
+                    </span>
+                  )}
+                </span>
+              </span>
+
+              {/* Region */}
+              <span className="inline-flex items-center space-x-1 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded-full text-[11px] text-slate-400 font-mono">
+                <Globe className="h-3 w-3 text-slate-500" />
+                <span>GCP Mumbai</span>
+              </span>
+            </div>
+          )}
         </div>
       </footer>
     </div>

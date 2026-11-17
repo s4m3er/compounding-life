@@ -46,7 +46,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public Endpoints
                         .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/api/system/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/finance/**").permitAll()
                         .requestMatchers("/api/wisdom/**").permitAll()
@@ -55,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/mcp/**").permitAll()
                         // Admin Protected
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/system/**").hasAuthority("ROLE_ADMIN")
                         // User Authenticated
                         .requestMatchers("/api/user/**").authenticated()
                         .anyRequest().permitAll()
