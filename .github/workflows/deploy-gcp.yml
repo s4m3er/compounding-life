@@ -49,6 +49,7 @@ jobs:
             --allow-unauthenticated \
             --service-account=antigravity@${{ env.PROJECT_ID }}.iam.gserviceaccount.com \
             --set-env-vars GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+            --min-instances 1 \
             --quiet
 
       # Build and push Frontend Container
@@ -68,4 +69,5 @@ jobs:
             --allow-unauthenticated \
             --service-account=antigravity@${{ env.PROJECT_ID }}.iam.gserviceaccount.com \
             --port 80 \
+            --min-instances 1 \
             --quiet
