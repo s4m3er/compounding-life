@@ -19,7 +19,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (!isOpen) return;
 
-    const clientId = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '850966046813-apps.googleusercontent.com';
+    const clientId = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '850966046813-3n5fk3j93n0ft3c6gecc8vpjjle2rhmn.apps.googleusercontent.com';
 
     // Initialize Google Identity Services if available
     const initGsi = () => {
