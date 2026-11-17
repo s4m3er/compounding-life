@@ -64,6 +64,8 @@ services:
       - DATABASE_USER=postgres
       - DATABASE_PASS=postgrespassword
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - KAFKA_ENABLED=true
+      - KAFKA_AUTO_STARTUP=true
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_MODEL=gemini-flash-lite-latest
     depends_on:

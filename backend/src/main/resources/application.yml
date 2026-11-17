@@ -17,10 +17,12 @@ spring:
       hibernate:
         format_sql: false
   kafka:
+    enabled: ${KAFKA_ENABLED:false}
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: compounding-life-group
       auto-offset-reset: earliest
+      auto-startup: ${KAFKA_AUTO_STARTUP:false}
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
@@ -28,6 +30,8 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        max.block.ms: 1000
 
 management:
   endpoints:
@@ -40,6 +44,9 @@ management:
       show-details: always
       probes:
         enabled: true
+  health:
+    kafka:
+      enabled: false # Never let Kafka health check hang application probes
   info:
     env:
       enabled: true
