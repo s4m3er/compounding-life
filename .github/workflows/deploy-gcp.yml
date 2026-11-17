@@ -40,6 +40,9 @@ jobs:
 
       # Deploy Backend to Cloud Run (Mumbai: asia-south1)
       - name: Deploy Backend to Cloud Run
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DB_PASS: ${{ secrets.DB_PASS }}
         run: |
           gcloud run deploy ${{ env.SERVICE_BACKEND }} \
             --image ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/backend:${{ github.sha }} \
@@ -49,7 +52,7 @@ jobs:
             --allow-unauthenticated \
             --service-account=antigravity@${{ env.PROJECT_ID }}.iam.gserviceaccount.com \
             --add-cloudsql-instances=compounding-life-prod:asia-south1:compounding-db \
-            --set-env-vars "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},DATABASE_URL=jdbc:postgresql:///${{ secrets.DB_NAME || 'compounding_db' }}?cloudSqlInstance=compounding-life-prod:asia-south1:compounding-db&socketFactory=com.google.cloud.sql.postgres.SocketFactory,DATABASE_DRIVER=org.postgresql.Driver,DATABASE_USER=postgres,DATABASE_PASS=${{ secrets.DB_PASS }}" \
+            --set-env-vars "^##^GEMINI_API_KEY=${GEMINI_API_KEY}##DATABASE_URL=jdbc:postgresql:///compounding_db?cloudSqlInstance=compounding-life-prod:asia-south1:compounding-db&socketFactory=com.google.cloud.sql.postgres.SocketFactory##DATABASE_DRIVER=org.postgresql.Driver##DATABASE_USER=postgres##DATABASE_PASS=${DB_PASS}" \
             --min-instances 1 \
             --quiet
 
