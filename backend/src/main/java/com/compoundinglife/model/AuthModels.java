@@ -32,11 +32,20 @@ public class AuthModels {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class GoogleAuthRequest {
+        private String credential; // Google ID Token (JWT)
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class AuthResponse {
         private String token;
         private String email;
         private String fullName;
         private String role;
+        private String picture;
     }
 
     @Data

@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-interface User {
+export interface User {
   email: string;
   fullName: string;
   role: string;
+  picture?: string;
 }
 
 interface AuthContextType {
@@ -12,6 +13,7 @@ interface AuthContextType {
   token: string | null;
   login: (email: string, pass: string) => Promise<void>;
   register: (email: string, pass: string, name: string) => Promise<void>;
+  loginWithGoogle: (credential: string) => Promise<void>;
   logout: () => void;
   isAdmin: boolean;
 }
@@ -38,18 +40,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, pass: string) => {
     const res = await axios.post('/api/auth/login', { email, password: pass });
-    const { token: jwt, email: userEmail, fullName, role } = res.data;
+    const { token: jwt, email: userEmail, fullName, role, picture } = res.data;
     setToken(jwt);
-    const userData = { email: userEmail, fullName, role };
+    const userData = { email: userEmail, fullName, role, picture };
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const register = async (email: string, pass: string, name: string) => {
     const res = await axios.post('/api/auth/register', { email, password: pass, fullName: name });
-    const { token: jwt, email: userEmail, fullName, role } = res.data;
+    const { token: jwt, email: userEmail, fullName, role, picture } = res.data;
     setToken(jwt);
-    const userData = { email: userEmail, fullName, role };
+    const userData = { email: userEmail, fullName, role, picture };
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
+
+  const loginWithGoogle = async (credential: string) => {
+    const res = await axios.post('/api/auth/google', { credential });
+    const { token: jwt, email: userEmail, fullName, role, picture } = res.data;
+    setToken(jwt);
+    const userData = { email: userEmail, fullName, role, picture };
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
   };
@@ -66,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         login,
         register,
+        loginWithGoogle,
         logout,
         isAdmin: user?.role === 'ROLE_ADMIN'
       }}

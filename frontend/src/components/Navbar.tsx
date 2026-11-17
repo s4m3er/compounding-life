@@ -80,6 +80,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, openAiC
 
             {user ? (
               <div className="flex items-center space-x-2 bg-slate-900 border border-slate-800 py-1 px-2.5 rounded-lg text-xs">
+                {user.picture ? (
+                  <img src={user.picture} alt={user.fullName} className="h-4 w-4 rounded-full object-cover" />
+                ) : null}
                 <span className="font-semibold text-emerald-400 max-w-[90px] truncate">{user.fullName}</span>
                 <button
                   onClick={logout}

@@ -30,6 +30,12 @@ public class User {
     private String role; // "ROLE_USER" or "ROLE_ADMIN"
 
     @Builder.Default
+    private String provider = "LOCAL"; // "LOCAL" or "GOOGLE"
+
+    @Column(length = 1000)
+    private String picture;
+
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Builder.Default
