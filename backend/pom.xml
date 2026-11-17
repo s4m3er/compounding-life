@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.compoundinglife</groupId>
 	<artifactId>compounding-life-backend</artifactId>
-	<version>1.0.0</version>
+	<version>1.2.0</version>
 	<name>compounding-life-backend</name>
 	<description>Compounding Life - Boring, Proven Health &amp; Wealth Fundamentals API</description>
 
