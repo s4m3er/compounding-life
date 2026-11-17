@@ -48,7 +48,8 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --service-account=antigravity@${{ env.PROJECT_ID }}.iam.gserviceaccount.com \
-            --set-env-vars GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+            --add-cloudsql-instances=compounding-life-prod:asia-south1:compounding-db \
+            --set-env-vars "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},DATABASE_URL=jdbc:postgresql:///${{ secrets.DB_NAME || 'compounding_db' }}?cloudSqlInstance=compounding-life-prod:asia-south1:compounding-db&socketFactory=com.google.cloud.sql.postgres.SocketFactory,DATABASE_DRIVER=org.postgresql.Driver,DATABASE_USER=postgres,DATABASE_PASS=${{ secrets.DB_PASS }}" \
             --min-instances 1 \
             --quiet
 

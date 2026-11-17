@@ -69,6 +69,13 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Google Cloud SQL PostgreSQL Socket Factory -->
+		<dependency>
+			<groupId>com.google.cloud.sql</groupId>
+			<artifactId>postgres-socket-factory</artifactId>
+			<version>1.17.0</version>
+		</dependency>
+
 		<!-- JJWT for JWT Authentication -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
